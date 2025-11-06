@@ -5,9 +5,6 @@ from fastapi.staticfiles import StaticFiles
 
 from app.routers.admin import router as admin_router
 from app.routers.admin import admin_settings  # ✅ adicionado
-# from app.models import admin as admin_models
-# from app.models.customer import Customer
-
 
 app = FastAPI(
     title="Delivery Backend",
@@ -20,7 +17,8 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
-    "https://meatburger.com.py",  # ✅ domínio da Hostinger liberado
+    "https://meatburger.com.py",      # ✅ domínio da Hostinger
+    "https://www.meatburger.com.py",  # ✅ versão com www
 ]
 
 app.add_middleware(
@@ -33,7 +31,7 @@ app.add_middleware(
 
 # ----------------- Rotas -----------------
 app.include_router(admin_router, prefix="/admin")
-app.include_router(admin_settings.router, prefix="/admin", tags=["Admin - Configurações"])  # ✅ nova linha
+app.include_router(admin_settings.router, prefix="/admin", tags=["Admin - Configurações"])
 
 # ----------------- Uploads -----------------
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
