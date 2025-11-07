@@ -3,8 +3,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from app.routers.admin import router as admin_router
-from app.routers.admin import admin_settings  # ✅ adicionado
+# Importando routers do admin (verifique se os nomes batem com os seus arquivos)
+from app.routers.admin import (
+    admin_auth,
+    admin_products,
+    admin_categories,
+    admin_addons,
+    admin_coupons,
+    admin_loyalty,
+    admin_orders,
+    admin_reports,
+    admin_settings,
+)
 
 app = FastAPI(
     title="Delivery Backend",
@@ -14,24 +24,28 @@ app = FastAPI(
 
 # ----------------- CORS -----------------
 origins = [
-    #"http://localhost:5173",
-    #"http://127.0.0.1:5173",
-    #"http://127.0.0.1:8000",
-    "https://meatburger.com.py",      # ✅ domínio da Hostinger
-    "https://www.meatburger.com.py",  # ✅ versão com www
+    "https://meatburger.com.py",
+    "https://www.meatburger.com.py",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # ✅ domínios autorizados
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ----------------- Rotas -----------------
-app.include_router(admin_router, prefix="/admin")
-app.include_router(admin_settings.router, prefix="/admin", tags=["Admin - Configurações"])
+# ----------------- Rotas administrativas -----------------
+app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
+app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
+app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
+app.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
+app.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
+app.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
+app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
+app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
+app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
 
 # ----------------- Uploads -----------------
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
