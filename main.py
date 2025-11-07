@@ -1,20 +1,9 @@
-# app/main.py
+# backend/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import sentry_sdk
 
-# ----------------- Configuração do Sentry -----------------
-sentry_sdk.init(
-    dsn="https://3a41a13c20838b5e2d251e8e2e4ebf6f@o4510325188591616.ingest.us.sentry.io/4510325192982528",
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-)
-
-app = FastAPI()
-
-# ----------------- Importando routers do admin -----------------
+# Importando routers do admin
 from app.routers.admin import (
     admin_auth,
     admin_products,
@@ -34,9 +23,11 @@ app = FastAPI(
 )
 
 # ----------------- CORS -----------------
+# Coloque todos os domínios que vão acessar seu backend
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
+    "http://localhost:3000",  # útil para testes locais
 ]
 
 app.add_middleware(
@@ -61,14 +52,6 @@ app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin
 # ----------------- Uploads -----------------
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
-# ----------------- Rotas gerais -----------------
 @app.get("/")
 def read_root():
     return {"message": "API do Delivery rodando perfeitamente 🚀"}
-
-# ----------------- Rota de teste Sentry -----------------
-@app.get("/sentry-debug")
-async def trigger_error():
-    # Esse erro vai gerar um evento no Sentry
-    division_by_zero = 1 / 0
-    return {"message": "Isso não será retornado"}
