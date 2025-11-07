@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-# Importando routers do admin (verifique se os nomes batem com os seus arquivos)
+# Importando routers do admin
 from app.routers.admin import (
     admin_auth,
     admin_products,
@@ -23,9 +23,11 @@ app = FastAPI(
 )
 
 # ----------------- CORS -----------------
+# Coloque todos os domínios que vão acessar seu backend
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
+    "http://localhost:3000",  # útil para testes locais
 ]
 
 app.add_middleware(
