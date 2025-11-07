@@ -9,22 +9,25 @@ from app.utils.security import verify_password, create_access_token
 
 router = APIRouter(tags=["Admin Auth"])
 
-@router.post("/login")
+@router.post("/login", response_model=AdminResponse)
 def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
+    """
+    Endpoint para login do admin.
+    Retorna token JWT e informações básicas do usuário.
+    """
     admin = db.query(Admin).filter(Admin.username == data.username).first()
 
     if not admin or not verify_password(data.password, admin.password):
         raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
 
-    # Cria o token JWT
     access_token = create_access_token({"sub": admin.username})
 
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": {
+    return AdminResponse(
+        access_token=access_token,
+        token_type="bearer",
+        user={
             "id": admin.id,
             "username": admin.username,
             "email": admin.email
         }
-    }
+    )
