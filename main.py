@@ -7,9 +7,12 @@ import sentry_sdk
 # ----------------- Configuração do Sentry -----------------
 sentry_sdk.init(
     dsn="https://3a41a13c20838b5e2d251e8e2e4ebf6f@o4510325188591616.ingest.us.sentry.io/4510325192982528",
-    traces_sample_rate=1.0,
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
     send_default_pii=True,
 )
+
+app = FastAPI()
 
 # ----------------- Importando routers do admin -----------------
 from app.routers.admin import (
