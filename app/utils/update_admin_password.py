@@ -5,7 +5,7 @@ from app.utils.security import get_password_hash
 def update_admin_password():
     db = SessionLocal()
     username = "MeatBurger"  # admin que você quer atualizar
-    new_password = "MeatBurger123@"  # nova senha
+    new_password = "Admin159*"  # nova senha
 
     admin = db.query(Admin).filter(Admin.username == username).first()
     if not admin:

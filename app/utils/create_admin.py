@@ -6,7 +6,7 @@ def create_admin():
     db = SessionLocal()
     username = "MeatBurger"
     email = "meatburger.py@outlook.com"
-    password = "MeatBurger123@"
+    password = "Admin159*"
 
     existing = db.query(Admin).filter(Admin.username == username).first()
     if existing:
