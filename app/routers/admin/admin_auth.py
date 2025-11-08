@@ -23,11 +23,9 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
     access_token = create_access_token({"sub": admin.username})
 
     return AdminResponse(
-        access_token=access_token,
-        token_type="bearer",
-        user={
-            "id": admin.id,
-            "username": admin.username,
-            "email": admin.email
-        }
-    )
+    id=admin.id,
+    username=admin.username,
+    email=admin.email,
+    access_token=access_token,
+    token_type="bearer"
+)
