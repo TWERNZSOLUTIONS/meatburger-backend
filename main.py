@@ -1,33 +1,20 @@
-# backend/main.py
+# main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
-# Importando routers do admin
-from app.routers.admin import (
-    admin_auth,
-    admin_products,
-    admin_categories,
-    admin_addons,
-    admin_coupons,
-    admin_loyalty,
-    admin_orders,
-    admin_reports,
-    admin_settings,
-)
+# 🔹 Importa suas rotas
+from routers import products, addons, categories, coupons, loyalty, settings, orders, reports, auth
 
 app = FastAPI(
-    title="Delivery Backend",
-    description="API do backend do sistema de delivery",
-    version="1.0.0"
+    title="MeatBurger Backend",
+    description="API para o painel administrativo e app de delivery",
+    version="1.0.0",
 )
 
-# ----------------- CORS -----------------
-# Coloque todos os domínios que vão acessar seu backend
+# 🔹 Configuração CORS
 origins = [
-    "https://meatburger.com.py",
-    "https://www.meatburger.com.py",
-    "http://localhost:3000",  # útil para testes locais
+    "https://meatburger.com.py",  # Frontend Hostinger
+    "http://localhost:5173",      # Desenvolvimento local
 ]
 
 app.add_middleware(
@@ -38,20 +25,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ----------------- Rotas administrativas -----------------
-app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
-app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
-app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
-app.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
-app.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
-app.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
-app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
-app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
-app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
+# 🔹 Inclui os routers
+app.include_router(auth.router, prefix="/admin/auth", tags=["Auth"])
+app.include_router(products.router, prefix="/admin/products", tags=["Products"])
+app.include_router(addons.router, prefix="/admin/addons", tags=["Addons"])
+app.include_router(categories.router, prefix="/admin/categories", tags=["Categories"])
+app.include_router(coupons.router, prefix="/admin/coupons", tags=["Coupons"])
+app.include_router(loyalty.router, prefix="/admin/loyalty", tags=["Loyalty"])
+app.include_router(settings.router, prefix="/admin/settings", tags=["Settings"])
+app.include_router(orders.router, prefix="/admin/orders", tags=["Orders"])
+app.include_router(reports.router, prefix="/admin/reports", tags=["Reports"])
 
-# ----------------- Uploads -----------------
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-@app.get("/")
-def read_root():
-    return {"message": "API do Delivery rodando perfeitamente 🚀"}
+# 🔹 Rota de teste
+@app.get("/ping")
+async def ping():
+    return {"message": "pong"}
