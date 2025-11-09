@@ -4,6 +4,8 @@ from pydantic import BaseModel, EmailStr
 class AdminLogin(BaseModel):
     username: str
     password: str
+    access_token: str      # adiciona isso
+    token_type: str        # adiciona isso
 
 class AdminResponse(BaseModel):
     id: int
