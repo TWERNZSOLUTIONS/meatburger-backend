@@ -8,7 +8,7 @@ from app.schemas.admin.admin_loyalty import LoyaltyCreate, LoyaltyUpdate, Loyalt
 from app.database import get_db
 
 router = APIRouter(
-    #prefix="/admin/loyalty",
+    #prefix="/loyalty",
     tags=["Admin Loyalty"]
 )
 

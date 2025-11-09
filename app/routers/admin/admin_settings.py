@@ -7,7 +7,7 @@ from datetime import datetime
 
 router = APIRouter(
     #prefix="/settings",  # 🔹 removido o /admin extra — evita duplicação de rota
-    tags=["Admin - Settings"]
+    tags=["Admin Settings"]
 )
 
 # ----------------- Criar configuração do site -----------------

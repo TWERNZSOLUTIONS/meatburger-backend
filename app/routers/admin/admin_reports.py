@@ -12,7 +12,7 @@ from app.schemas.admin.admin_reports import (
 )
 
 router = APIRouter(
-    #prefix="/admin/reports",
+    #prefix="/reports",
     tags=["Admin Reports"]
 )
 
