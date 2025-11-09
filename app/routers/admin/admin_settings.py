@@ -5,9 +5,10 @@ from app.models.admin.admin_settings import SiteSettings
 from app.schemas.admin.admin_settings import SiteSettingsCreate, SiteSettingsUpdate, SiteSettingsOut
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(
     #prefix="/settings",  # 🔹 removido o /admin extra — evita duplicação de rota
-    #tags=["Admin - Settings"]
+    tags=["Admin - Settings"]
+)
 
 # ----------------- Criar configuração do site -----------------
 @router.post("/", response_model=SiteSettingsOut)

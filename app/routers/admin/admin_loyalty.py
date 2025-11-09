@@ -7,9 +7,10 @@ from app.models.admin.admin_loyalty import Loyalty
 from app.schemas.admin.admin_loyalty import LoyaltyCreate, LoyaltyUpdate, LoyaltyOut
 from app.database import get_db
 
-router = APIRouter()
+router = APIRouter(
     #prefix="/admin/loyalty",
-    #tags=["Admin Loyalty"]
+    tags=["Admin Loyalty"]
+)
 
 # ----------------- Criar registro de fidelidade -----------------
 @router.post("/", response_model=LoyaltyOut)

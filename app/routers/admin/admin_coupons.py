@@ -7,10 +7,10 @@ from app.schemas.admin.admin_coupon import CouponCreate, CouponUpdate, CouponOut
 from app.database import get_db
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(
     #prefix="/admin/coupons",
-    #tags=["Admin Coupons"]
-
+    tags=["Admin Coupons"]
+)
 
 # ----------------- Criar cupom -----------------
 @router.post("/", response_model=CouponOut)

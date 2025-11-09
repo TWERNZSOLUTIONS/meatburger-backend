@@ -11,9 +11,10 @@ from app.schemas.admin.admin_reports import (
     TimePeriodReport
 )
 
-router = APIRouter()
+router = APIRouter(
     #prefix="/admin/reports",
-    #tags=["Admin Reports"]
+    tags=["Admin Reports"]
+)
 
 # ----------------- Relatório financeiro por período -----------------
 @router.get("/finance", response_model=TimePeriodReport)
