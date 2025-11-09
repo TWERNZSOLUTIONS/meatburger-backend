@@ -9,10 +9,9 @@ from app.models.admin.admin_category import Category
 from app.schemas.admin.admin_product import ProductCreate, ProductUpdate, ProductOut
 from app.database import get_db
 
-router = APIRouter(
-    prefix="/products",
-    tags=["Admin - Produtos"]
-)
+router = APIRouter()
+    #prefix="/products",
+    #tags=["Admin - Produtos"]
 
 UPLOAD_DIR = "uploads"
 

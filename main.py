@@ -23,7 +23,7 @@ app = FastAPI(
 )
 
 # ----------------- CORS -----------------
-# Coloque todos os domínios que vão acessar seu backend
+# Libera domínios autorizados a consumir a API
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
@@ -39,6 +39,9 @@ app.add_middleware(
 )
 
 # ----------------- Rotas administrativas -----------------
+# ✅ Agora os routers internos NÃO têm prefixo repetido.
+# Cada include define seu próprio prefixo corretamente.
+
 app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
 app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
 app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
@@ -50,8 +53,10 @@ app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin R
 app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
 
 # ----------------- Uploads -----------------
+# Permite servir arquivos estáticos enviados (ex: imagens de produtos)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# ----------------- Rota raiz -----------------
 @app.get("/")
 def read_root():
     return {"message": "API do Delivery rodando perfeitamente 🚀"}

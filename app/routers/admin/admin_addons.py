@@ -6,10 +6,9 @@ from app.models.admin.admin_addon import Addon
 from app.schemas.admin.admin_addon import AddonCreate, AddonUpdate, AddonOut
 from app.database import get_db
 
-router = APIRouter(
-    prefix="/admin/addons",
-    tags=["Admin Addons"]
-)
+router = APIRouter()
+    #prefix="/admin/addons",
+    #tags=["Admin Addons"]
 
 # ----------------- Criar adicional -----------------
 @router.post("/", response_model=AddonOut)

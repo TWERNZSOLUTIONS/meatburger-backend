@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.admin.admin_order import AdminOrder
 from app.schemas.admin.admin_order import AdminOrderCreate, AdminOrderResponse
 
-router = APIRouter(prefix="/admin_orders", tags=["Admin Orders"])
+router = APIRouter() #prefix="/admin_orders", tags=["Admin Orders"])
 
 
 # 🔹 Criar nova comanda (pedido)

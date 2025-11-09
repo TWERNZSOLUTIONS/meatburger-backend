@@ -6,10 +6,9 @@ from app.models.admin.admin_category import Category
 from app.schemas.admin.admin_category import CategoryCreate, CategoryUpdate, CategoryOut
 from app.database import get_db
 
-router = APIRouter(
-    prefix="/admin/categories",
-    tags=["Admin Categories"]
-)
+router = APIRouter()
+    #prefix="/admin/categories",
+    #tags=["Admin Categories"]
 
 # ----------------- Criar categoria -----------------
 @router.post("/", response_model=CategoryOut)
