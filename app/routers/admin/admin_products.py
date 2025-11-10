@@ -10,8 +10,8 @@ from app.schemas.admin.admin_product import ProductCreate, ProductUpdate, Produc
 from app.database import get_db
 
 router = APIRouter(
-    prefix="/admin/products",
-    tags=["Admin - Produtos"]
+    #prefix="/admin/products",
+    tags=["Admin Produtos"]
 )
 
 UPLOAD_DIR = "uploads"

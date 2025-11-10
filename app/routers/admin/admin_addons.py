@@ -7,8 +7,8 @@ from app.schemas.admin.admin_addon import AddonCreate, AddonUpdate, AddonOut
 from app.database import get_db
 
 router = APIRouter(
-    prefix="/admin/addons",
-    tags=["Admin - Adicionais"]
+    #prefix="/admin/addons",
+    tags=["Admin Adicionais"]
 )
 
 # ----------------- Criar adicional -----------------
