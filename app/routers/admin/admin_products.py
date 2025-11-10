@@ -9,10 +9,7 @@ from app.models.admin.admin_category import Category
 from app.schemas.admin.admin_product import ProductCreate, ProductUpdate, ProductOut
 from app.database import get_db
 
-router = APIRouter(
-    #prefix="/admin/products",
-    tags=["Admin Produtos"]
-)
+router = APIRouter(tags=["Admin Produtos"])
 
 UPLOAD_DIR = "uploads"
 
@@ -36,10 +33,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
 # ----------------- Listar produtos -----------------
 @router.get("/", response_model=List[ProductOut])
 def list_products(db: Session = Depends(get_db)):
-    try:
-        return db.query(Product).order_by(Product.burger_of_the_month.desc(), Product.position).all()
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao listar produtos: {str(e)}")
+    return db.query(Product).order_by(Product.burger_of_the_month.desc(), Product.position).all()
 
 
 # ----------------- Obter produto -----------------
@@ -81,30 +75,14 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     return {"detail": "Produto deletado com sucesso"}
 
 
-# ----------------- Atualizar posição -----------------
-@router.patch("/{product_id}/position")
-def update_product_position(product_id: int, position: int, db: Session = Depends(get_db)):
-    db_product = db.query(Product).filter(Product.id == product_id).first()
-    if not db_product:
-        raise HTTPException(status_code=404, detail="Produto não encontrado")
-
-    db_product.position = position
-    db.commit()
-    db.refresh(db_product)
-    return db_product
-
-
 # ----------------- Upload de imagem -----------------
 @router.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...)):
     """Envia imagem e retorna URL"""
-    try:
-        os.makedirs(UPLOAD_DIR, exist_ok=True)
-        file_path = os.path.join(UPLOAD_DIR, file.filename)
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-        return {"url": f"/uploads/{file.filename}"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao enviar imagem: {str(e)}")
+    return {"url": f"/uploads/{file.filename}"}
