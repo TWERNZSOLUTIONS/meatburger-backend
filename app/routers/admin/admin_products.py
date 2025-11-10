@@ -32,6 +32,7 @@ def create_product(product: ProductCreate, db: Session = Depends(get_db)):
     db.refresh(db_product)
     return db_product
 
+
 # ----------------- Listar produtos -----------------
 @router.get("/", response_model=List[ProductOut])
 def list_products(db: Session = Depends(get_db)):
@@ -40,6 +41,7 @@ def list_products(db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao listar produtos: {str(e)}")
 
+
 # ----------------- Obter produto -----------------
 @router.get("/{product_id}", response_model=ProductOut)
 def get_product(product_id: int, db: Session = Depends(get_db)):
@@ -47,6 +49,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     return db_product
+
 
 # ----------------- Atualizar produto -----------------
 @router.put("/{product_id}", response_model=ProductOut)
@@ -65,6 +68,7 @@ def update_product(product_id: int, product: ProductUpdate, db: Session = Depend
     db.refresh(db_product)
     return db_product
 
+
 # ----------------- Deletar produto -----------------
 @router.delete("/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db)):
@@ -75,6 +79,7 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     db.delete(db_product)
     db.commit()
     return {"detail": "Produto deletado com sucesso"}
+
 
 # ----------------- Atualizar posição -----------------
 @router.patch("/{product_id}/position")
@@ -87,6 +92,7 @@ def update_product_position(product_id: int, position: int, db: Session = Depend
     db.commit()
     db.refresh(db_product)
     return db_product
+
 
 # ----------------- Upload de imagem -----------------
 @router.post("/upload-image/")

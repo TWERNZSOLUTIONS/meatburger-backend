@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, condecimal, constr
+from pydantic import BaseModel, condecimal, constr
 from typing import Optional
 from datetime import datetime
 
