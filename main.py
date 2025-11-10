@@ -23,7 +23,6 @@ app = FastAPI(
 )
 
 # ----------------- CORS -----------------
-# Libera domínios autorizados a consumir a API
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
@@ -39,21 +38,18 @@ app.add_middleware(
 )
 
 # ----------------- Rotas administrativas -----------------
-# ✅ Agora os routers internos NÃO têm prefixo repetido.
-# Cada include define seu próprio prefixo corretamente.
-
-app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
-app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
-app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
-app.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
-app.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
-app.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
-app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
-app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
-app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
+# ✅ Agora cada router já define seu prefixo internamente (ex: /admin/products)
+app.include_router(admin_auth.router)
+app.include_router(admin_products.router)
+app.include_router(admin_categories.router)
+app.include_router(admin_addons.router)
+app.include_router(admin_coupons.router)
+app.include_router(admin_loyalty.router)
+app.include_router(admin_orders.router)
+app.include_router(admin_reports.router)
+app.include_router(admin_settings.router)
 
 # ----------------- Uploads -----------------
-# Permite servir arquivos estáticos enviados (ex: imagens de produtos)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # ----------------- Rota raiz -----------------
