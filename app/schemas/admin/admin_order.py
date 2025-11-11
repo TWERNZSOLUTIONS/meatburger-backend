@@ -52,3 +52,6 @@ class AdminOrderOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+# ✅ Alias para compatibilidade com o router
+AdminOrderResponse = AdminOrderOut

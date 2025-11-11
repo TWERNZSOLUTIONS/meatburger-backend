@@ -5,8 +5,7 @@ from app.database import get_db
 from app.models.admin.admin_order import AdminOrder
 from app.schemas.admin.admin_order import AdminOrderCreate, AdminOrderResponse
 
-router = APIRouter( 
-    #prefix="/admin_orders",
+router = APIRouter(
     tags=["Admin Orders"]
 )
 
@@ -14,12 +13,9 @@ router = APIRouter(
 @router.post("/", response_model=AdminOrderResponse)
 def create_admin_order(order: AdminOrderCreate, db: Session = Depends(get_db)):
     """Cria uma nova comanda e gera automaticamente o número do pedido (order_number)."""
-
-    # Obter o último número de pedido salvo
     last_order_number = db.query(func.max(AdminOrder.order_number)).scalar()
     new_order_number = (last_order_number or 0) + 1
 
-    # Criar a nova comanda
     db_order = AdminOrder(
         order_number=new_order_number,
         customer_name=order.customer_name,
