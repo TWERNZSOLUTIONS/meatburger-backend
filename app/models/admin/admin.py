@@ -1,4 +1,3 @@
-# backend/app/models/admin.py
 from sqlalchemy import Column, Integer, String, TIMESTAMP, func
 from app.database import Base
 
@@ -9,5 +8,5 @@ class Admin(Base):
     username = Column(String(180), unique=True, nullable=False)
     email = Column(String(300), unique=True, nullable=False)
     password = Column(String(285), nullable=False)
-    created_at = Column(TIMESTAMP, server_default=func.now())
-    updated_at = Column(TIMESTAMP, onupdate=func.now())
+    created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now(), nullable=False)

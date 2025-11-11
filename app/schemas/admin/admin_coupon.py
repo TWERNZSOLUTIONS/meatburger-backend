@@ -2,6 +2,7 @@ from pydantic import BaseModel, constr
 from typing import Optional, List
 from datetime import datetime
 
+# ----------------- Schemas base -----------------
 class CouponBase(BaseModel):
     code: constr(max_length=50)
     discount_type: str  # 'percent' ou 'value'
@@ -13,10 +14,13 @@ class CouponBase(BaseModel):
     is_active: Optional[bool] = True
     product_ids: Optional[List[int]] = []
 
+# ----------------- Schemas para CRUD -----------------
 class CouponCreate(CouponBase):
+    """Schema para criação de cupom."""
     pass
 
 class CouponUpdate(BaseModel):
+    """Schema para atualização parcial de cupom."""
     code: Optional[constr(max_length=50)] = None
     discount_type: Optional[str] = None
     discount_value: Optional[float] = None
@@ -28,9 +32,10 @@ class CouponUpdate(BaseModel):
     product_ids: Optional[List[int]] = None
 
 class CouponOut(CouponBase):
+    """Schema de retorno de cupom."""
     id: int
     created_at: datetime
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # ✅ Substitui orm_mode no Pydantic 2.x

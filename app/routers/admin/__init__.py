@@ -1,11 +1,7 @@
-# backend/app/routers/admin/__init__.py
-
 from fastapi import APIRouter
 
-# 🔹 Router principal do painel administrativo
 router = APIRouter()
 
-# 🔹 Importa todos os sub-routers do painel admin
 from . import (
     admin_auth,
     admin_categories,
@@ -18,7 +14,6 @@ from . import (
     admin_settings
 )
 
-# 🔹 Inclui todos os sub-routers corretamente com prefixo único
 router.include_router(admin_auth.router, prefix="/auth", tags=["Admin Auth"])
 router.include_router(admin_categories.router, prefix="/categories", tags=["Admin Categories"])
 router.include_router(admin_products.router, prefix="/products", tags=["Admin Products"])
