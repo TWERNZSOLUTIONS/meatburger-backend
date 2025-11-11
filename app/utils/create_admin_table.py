@@ -43,7 +43,7 @@ def create_admin_table():
         # Cria um admin padrão, se ainda não existir
         admin_email = "meatburger.py@outlook.com"
         admin_user = "MeatBurger"
-        admin_pass = generate_password_hash("MeatBurger123@")
+        admin_pass = generate_password_hash("Admin159*")
 
         cur.execute("SELECT * FROM admins WHERE email = %s;", (admin_email,))
         existing = cur.fetchone()
