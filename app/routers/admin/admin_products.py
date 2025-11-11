@@ -1,30 +1,64 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 import os
 import shutil
 
 from app.models.admin.admin_product import Product
 from app.models.admin.admin_category import Category
-from app.schemas.admin.admin_product import ProductCreate, ProductUpdate, ProductOut
+from app.schemas.admin.admin_product import ProductOut
 from app.database import get_db
 
 router = APIRouter(tags=["Admin Produtos"])
 
 UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ----------------- Criar produto -----------------
 @router.post("/", response_model=ProductOut)
-def create_product(product: ProductCreate, db: Session = Depends(get_db)):
-    category = db.query(Category).filter(Category.id == product.category_id, Category.active == True).first()
+def create_product(
+    name: str = Form(...),
+    description: Optional[str] = Form(None),
+    price: float = Form(...),
+    category_id: int = Form(...),
+    active: bool = Form(True),
+    burger_of_the_month: bool = Form(False),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+):
+    category = (
+        db.query(Category)
+        .filter(Category.id == category_id, Category.active == True)
+        .first()
+    )
     if not category:
         raise HTTPException(status_code=404, detail="Categoria não encontrada ou inativa")
 
-    # Só permite 1 burger do mês ativo
-    if product.burger_of_the_month:
+    # Garante apenas 1 burger do mês ativo
+    if burger_of_the_month:
         db.query(Product).update({Product.burger_of_the_month: False})
 
-    db_product = Product(**product.model_dump())
+    # Salvar imagem, se enviada
+    image_url = None
+    if image:
+        file_path = os.path.join(UPLOAD_DIR, image.filename)
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            image_url = f"/uploads/{image.filename}"
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Erro ao salvar imagem: {str(e)}")
+
+    db_product = Product(
+        name=name,
+        description=description,
+        price=price,
+        category_id=category_id,
+        active=active,
+        burger_of_the_month=burger_of_the_month,
+        image_url=image_url,
+    )
+
     db.add(db_product)
     db.commit()
     db.refresh(db_product)
@@ -48,16 +82,45 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 # ----------------- Atualizar produto -----------------
 @router.put("/{product_id}", response_model=ProductOut)
-def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db)):
+def update_product(
+    product_id: int,
+    name: Optional[str] = Form(None),
+    description: Optional[str] = Form(None),
+    price: Optional[float] = Form(None),
+    category_id: Optional[int] = Form(None),
+    active: Optional[bool] = Form(None),
+    burger_of_the_month: Optional[bool] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db),
+):
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
 
-    if product.burger_of_the_month:
+    # Atualiza campos se informados
+    if name is not None:
+        db_product.name = name
+    if description is not None:
+        db_product.description = description
+    if price is not None:
+        db_product.price = price
+    if category_id is not None:
+        db_product.category_id = category_id
+    if active is not None:
+        db_product.active = active
+    if burger_of_the_month is not None:
         db.query(Product).update({Product.burger_of_the_month: False})
+        db_product.burger_of_the_month = burger_of_the_month
 
-    for key, value in product.model_dump(exclude_unset=True).items():
-        setattr(db_product, key, value)
+    # Atualiza imagem, se nova for enviada
+    if image:
+        file_path = os.path.join(UPLOAD_DIR, image.filename)
+        try:
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(image.file, buffer)
+            db_product.image_url = f"/uploads/{image.filename}"
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Erro ao salvar imagem: {str(e)}")
 
     db.commit()
     db.refresh(db_product)
@@ -76,10 +139,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     return {"detail": "Produto deletado com sucesso"}
 
 
-# ----------------- Upload de imagem -----------------
+# ----------------- Upload de imagem isolado (opcional) -----------------
 @router.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...)):
-    """Envia imagem e retorna URL de acesso"""
+    """Permite enviar imagem separadamente e retorna URL"""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 

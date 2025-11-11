@@ -1,3 +1,4 @@
+# app/models/admin/admin_addon.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.sql import func
@@ -18,3 +19,6 @@ class Addon(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+    # 💡 Fácil expansão futura
+    # image_url = Column(String(255), nullable=True)
