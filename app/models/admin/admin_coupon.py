@@ -1,10 +1,10 @@
+# app/models/admin/admin_coupon.py
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from app.database import Base
 from datetime import datetime
-from app.models.admin.admin_product import Product  # Import correto do modelo Product
+from app.database import Base
 
-# Relação muitos-para-muitos entre cupons e produtos
+# Tabela de associação muitos-para-muitos entre cupons e produtos
 coupon_products = Table(
     "coupon_products",
     Base.metadata,
@@ -28,5 +28,9 @@ class Coupon(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Produtos associados
-    products = relationship("Product", secondary=coupon_products, back_populates="coupons")
+    # 🔑 RELAÇÃO COM PRODUTOS
+    products = relationship(
+        "Product",
+        secondary=coupon_products,
+        back_populates="coupons"
+    )
