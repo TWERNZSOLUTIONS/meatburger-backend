@@ -5,3 +5,4 @@ from app.schemas.admin.admin_product import ProductCreate, ProductUpdate, Produc
 from app.schemas.admin.admin_settings import SiteSettingsCreate, SiteSettingsUpdate, SiteSettingsOut
 from app.schemas.admin.admin_order import AdminOrderCreate, AdminOrderUpdate, AdminOrderOut
 from app.schemas.admin.admin_loyalty import LoyaltyCreate, LoyaltyUpdate, LoyaltyOut
+from app.schemas.admin.admin_loyalty_config import LoyaltyConfigOut, LoyaltyConfigUpdate  # ✅ novo

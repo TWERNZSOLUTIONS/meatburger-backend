@@ -12,7 +12,7 @@ class Loyalty(Base):
     phone = Column(String(50), nullable=False)
     points = Column(Integer, default=0)
     total_orders = Column(Integer, default=0)
-    reward_threshold = Column(Integer, default=10)
+    reward_threshold = Column(Integer, default=10)  # Número de pedidos para ganhar prêmio
     reward_claimed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

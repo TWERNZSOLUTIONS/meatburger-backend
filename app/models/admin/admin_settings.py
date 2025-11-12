@@ -8,17 +8,17 @@ class SiteSettings(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     # Horário de funcionamento
-    open_time = Column(Time, nullable=True)
-    close_time = Column(Time, nullable=True)
+    opening_time = Column(Time, nullable=True)
+    closing_time = Column(Time, nullable=True)
 
-    # Dias de funcionamento (lista de strings: ["Segunda", "Terça", ...])
-    working_days = Column(JSON, default=list)
+    # Dias de funcionamento (lista de strings: ["Mon", "Tue", ...])
+    days_open = Column(JSON, default=list)
 
     # Status de funcionamento (Aberto/Fechado)
-    is_open = Column(Boolean, default=True)
+    open = Column(Boolean, default=True)
 
-    # Mensagem de aviso
-    notice_message = Column(String, nullable=True)
+    # Mensagem de aviso quando fechado
+    closed_message = Column(String, nullable=True)
 
     # Links de redes sociais
     instagram_link = Column(String, nullable=True)

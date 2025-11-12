@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
-# ----------------- Schemas base -----------------
 class LoyaltyBase(BaseModel):
     customer_id: int
     customer_name: str
@@ -12,7 +11,6 @@ class LoyaltyBase(BaseModel):
     reward_threshold: Optional[int] = 10
     reward_claimed: Optional[bool] = False
 
-# ----------------- Schemas para CRUD -----------------
 class LoyaltyCreate(LoyaltyBase):
     """Schema para criação de registro de fidelidade."""
     pass
@@ -31,4 +29,4 @@ class LoyaltyOut(LoyaltyBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True  # ✅ Substitui orm_mode no Pydantic 2.x
+        from_attributes = True

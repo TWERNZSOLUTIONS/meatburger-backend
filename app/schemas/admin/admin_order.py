@@ -2,12 +2,13 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
-# Estruturas auxiliares
+# Itens adicionais
 class AddonItem(BaseModel):
     name: str
     quantity: int
     price: float
 
+# Produtos do pedido
 class ProductItem(BaseModel):
     name: str
     quantity: int
@@ -36,7 +37,7 @@ class AdminOrderUpdate(BaseModel):
     observations: Optional[str] = None
     delivery_fee: Optional[float] = None
 
-# Resposta de pedido
+# Resposta do pedido
 class AdminOrderOut(BaseModel):
     id: int
     order_number: int
@@ -53,5 +54,5 @@ class AdminOrderOut(BaseModel):
     class Config:
         from_attributes = True
 
-# ✅ Alias para compatibilidade com o router
+# Alias para compatibilidade com router
 AdminOrderResponse = AdminOrderOut

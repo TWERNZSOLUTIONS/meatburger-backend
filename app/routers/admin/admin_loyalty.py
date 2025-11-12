@@ -26,7 +26,7 @@ def create_loyalty(loyalty: LoyaltyCreate, db: Session = Depends(get_db)):
 def list_loyalty(db: Session = Depends(get_db)):
     return db.query(Loyalty).order_by(Loyalty.customer_name).all()
 
-# ----------------- Atualizar pontos e pedidos -----------------
+# ----------------- Atualizar registro -----------------
 @router.put("/{loyalty_id}", response_model=LoyaltyOut)
 def update_loyalty(loyalty_id: int, loyalty: LoyaltyUpdate, db: Session = Depends(get_db)):
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
@@ -50,3 +50,29 @@ def delete_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
     db.delete(db_loyalty)
     db.commit()
     return {"detail": "Registro de fidelidade deletado com sucesso"}
+
+# ----------------- Incrementar pedidos do cliente -----------------
+@router.post("/{loyalty_id}/increment", response_model=LoyaltyOut)
+def increment_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
+    db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
+    if not db_loyalty:
+        raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")
+
+    db_loyalty.total_orders += 1
+    # Incrementa pontos conforme a lógica que você definir (ex: 1 ponto por pedido)
+    db_loyalty.points += 1
+    db.commit()
+    db.refresh(db_loyalty)
+    return db_loyalty
+
+# ----------------- Marcar cliente como premiado -----------------
+@router.post("/{loyalty_id}/reward", response_model=LoyaltyOut)
+def reward_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
+    db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
+    if not db_loyalty:
+        raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")
+
+    db_loyalty.reward_claimed = True
+    db.commit()
+    db.refresh(db_loyalty)
+    return db_loyalty

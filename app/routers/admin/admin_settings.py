@@ -5,34 +5,7 @@ from app.models.admin.admin_settings import SiteSettings
 from app.schemas.admin.admin_settings import SiteSettingsCreate, SiteSettingsUpdate, SiteSettingsOut
 from datetime import datetime
 
-router = APIRouter(
-    #prefix="/settings",  # 🔹 removido o /admin extra — evita duplicação de rota
-    tags=["Admin Settings"]
-)
-
-# ----------------- Criar configuração do site -----------------
-@router.post("/", response_model=SiteSettingsOut)
-def create_settings(settings: SiteSettingsCreate, db: Session = Depends(get_db)):
-    db_settings = SiteSettings(**settings.dict())
-    db.add(db_settings)
-    db.commit()
-    db.refresh(db_settings)
-    return db_settings
-
-# ----------------- Atualizar configuração -----------------
-@router.put("/{settings_id}", response_model=SiteSettingsOut)
-def update_settings(settings_id: int, settings: SiteSettingsUpdate, db: Session = Depends(get_db)):
-    db_settings = db.query(SiteSettings).filter(SiteSettings.id == settings_id).first()
-    if not db_settings:
-        raise HTTPException(status_code=404, detail="Configuração do site não encontrada")
-    
-    for key, value in settings.dict(exclude_unset=True).items():
-        setattr(db_settings, key, value)
-
-    db_settings.updated_at = datetime.utcnow()
-    db.commit()
-    db.refresh(db_settings)
-    return db_settings
+router = APIRouter(tags=["Admin Settings"])
 
 # ----------------- Obter configuração do site -----------------
 @router.get("/", response_model=SiteSettingsOut)
@@ -41,3 +14,33 @@ def get_settings(db: Session = Depends(get_db)):
     if not settings:
         raise HTTPException(status_code=404, detail="Configuração do site não encontrada")
     return settings
+
+# ----------------- Atualizar configuração -----------------
+@router.put("/", response_model=SiteSettingsOut)
+def update_settings(settings_data: SiteSettingsUpdate, db: Session = Depends(get_db)):
+    """Atualiza a configuração mais recente do site."""
+    db_settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
+    if not db_settings:
+        # Se não existir, cria uma nova configuração
+        db_settings = SiteSettings(**settings_data.dict())
+        db.add(db_settings)
+        db.commit()
+        db.refresh(db_settings)
+        return db_settings
+
+    for key, value in settings_data.dict(exclude_unset=True).items():
+        setattr(db_settings, key, value)
+
+    db_settings.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(db_settings)
+    return db_settings
+
+# ----------------- Criar configuração inicial (opcional) -----------------
+@router.post("/", response_model=SiteSettingsOut)
+def create_settings(settings_data: SiteSettingsCreate, db: Session = Depends(get_db)):
+    db_settings = SiteSettings(**settings_data.dict())
+    db.add(db_settings)
+    db.commit()
+    db.refresh(db_settings)
+    return db_settings

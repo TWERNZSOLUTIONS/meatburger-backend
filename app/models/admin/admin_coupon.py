@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Table,
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime
+from app.models.admin.admin_product import Product  # Import correto do modelo Product
 
 # Relação muitos-para-muitos entre cupons e produtos
 coupon_products = Table(
@@ -28,4 +29,4 @@ class Coupon(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Produtos associados
-    products = relationship("Product", secondary=coupon_products, backref="coupons")
+    products = relationship("Product", secondary=coupon_products, back_populates="coupons")

@@ -5,6 +5,7 @@ from datetime import datetime
 # ----------------- Schemas base -----------------
 class CategoryBase(BaseModel):
     name: constr(max_length=100)
+    description: Optional[str] = None
     position: Optional[int] = 0
     active: Optional[bool] = True
 
@@ -16,6 +17,7 @@ class CategoryCreate(CategoryBase):
 class CategoryUpdate(BaseModel):
     """Schema para atualização parcial de categoria."""
     name: Optional[constr(max_length=100)] = None
+    description: Optional[str] = None
     position: Optional[int] = None
     active: Optional[bool] = None
 
@@ -26,4 +28,4 @@ class CategoryOut(CategoryBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True  # ✅ Substitui orm_mode no Pydantic 2.x
+        from_attributes = True
