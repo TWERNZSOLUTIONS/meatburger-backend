@@ -18,11 +18,11 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
     admin = db.query(Admin).filter(Admin.username == data.username).first()
 
     if not admin or not verify_password(data.password, admin.password):
-        raise HTTPException(status_code=401, detail="Usuário ou senha incorretos")
+        raise HTTPException(status_code=400, detail="Usuário ou senha incorretos")
 
     access_token = create_access_token({"sub": admin.username})
 
-    return AdminResponse(
+    return AdminResponse.model_validate(
         id=admin.id,
         username=admin.username,
         email=admin.email,
