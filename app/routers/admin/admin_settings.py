@@ -5,7 +5,7 @@ from app.models.admin.admin_settings import SiteSettings
 from app.schemas.admin.admin_settings import SiteSettingsCreate, SiteSettingsUpdate, SiteSettingsOut
 from datetime import datetime
 
-router = APIRouter(tags=["Admin Settings"])
+router = APIRouter(tags=["admin Settings"])
 
 # ----------------- Obter configuração do site -----------------
 @router.get("/", response_model=SiteSettingsOut)

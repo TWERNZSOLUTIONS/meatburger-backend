@@ -10,9 +10,8 @@ from . import (
     admin_orders,
     admin_coupons,
     admin_loyalty,
-    admin_loyalty_config,  # ✅ novo
     admin_reports,
-    admin_settings
+    admin_settings,
 )
 
 router.include_router(admin_auth.router, prefix="/auth", tags=["Admin Auth"])
@@ -22,6 +21,5 @@ router.include_router(admin_addons.router, prefix="/addons", tags=["Admin Addons
 router.include_router(admin_orders.router, prefix="/orders", tags=["Admin Orders"])
 router.include_router(admin_coupons.router, prefix="/coupons", tags=["Admin Coupons"])
 router.include_router(admin_loyalty.router, prefix="/loyalty", tags=["Admin Loyalty"])
-router.include_router(admin_loyalty_config.router, prefix="/loyalty-config", tags=["Admin Loyalty Config"])  # ✅ novo
 router.include_router(admin_reports.router, prefix="/reports", tags=["Admin Reports"])
 router.include_router(admin_settings.router, prefix="/settings", tags=["Admin Settings"])
