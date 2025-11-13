@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.schemas.admin.schema import AdminLogin, AdminResponse
+from app.schemas.admin.admin_schema import AdminLogin, AdminResponse
 from app.models.admin import Admin
 from app.utils.security import verify_password, create_access_token
 
