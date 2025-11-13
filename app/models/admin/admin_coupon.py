@@ -1,7 +1,7 @@
 # app/models/admin/admin_coupon.py
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Table, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
 from app.database import Base
 
 # Tabela de associação muitos-para-muitos entre cupons e produtos
@@ -22,11 +22,11 @@ class Coupon(Base):
     min_order_value = Column(Float, default=0.0)
     usage_limit = Column(Integer, default=None)
     used_count = Column(Integer, default=0)
-    valid_from = Column(DateTime, nullable=False)
-    valid_until = Column(DateTime, nullable=False)
+    valid_from = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    valid_until = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # 🔑 RELAÇÃO COM PRODUTOS
     products = relationship(

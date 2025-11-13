@@ -1,4 +1,3 @@
-# backend/app/routers/admin/admin_auth.py
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -6,9 +5,9 @@ from app.schemas.admin.admin_schema import AdminLogin, AdminResponse
 from app.models.admin import Admin
 from app.utils.security import verify_password, create_access_token
 
-# Sem prefixo aqui — o prefixo final é aplicado no main.py
 router = APIRouter(tags=["Admin Auth"])
 
+# ----------------- Login admin -----------------
 @router.post("/login", response_model=AdminResponse)
 def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
     """
@@ -30,6 +29,8 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
         token_type="bearer"
     )
 
+# ----------------- Status Auth -----------------
 @router.get("/check")
 def check_status():
+    """Verifica se o endpoint de autenticação está ativo"""
     return {"status": "Auth ativo e rodando 🚀"}

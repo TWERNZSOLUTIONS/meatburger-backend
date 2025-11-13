@@ -15,30 +15,30 @@ from . import (
     admin_settings,
 )
 
-# AUTH
-router.include_router(admin_auth.router, prefix="/auth", tags=["Admin Auth"])
+# AUTENTICAÇÃO
+router.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
 
-# CATEGORIES
-router.include_router(admin_categories.router, prefix="/categories", tags=["Admin Categories"])
+# CATEGORIAS
+router.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
 
-# PRODUCTS
-router.include_router(admin_products.router, prefix="/products", tags=["Admin Products"])
+# PRODUTOS
+router.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
 
-# ADDONS
-router.include_router(admin_addons.router, prefix="/addons", tags=["Admin Addons"])
+# ADICIONAIS
+router.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
 
-# ORDERS
-router.include_router(admin_orders.router, prefix="/orders", tags=["Admin Orders"])
+# PEDIDOS
+router.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
 
-# COUPONS
-router.include_router(admin_coupons.router, prefix="/coupons", tags=["Admin Coupons"])
+# CUPONS
+router.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
 
-# LOYALTY
-router.include_router(admin_loyalty.router, prefix="/loyalty", tags=["Admin Loyalty"])
-router.include_router(admin_loyalty_config.router, prefix="/loyalty-config", tags=["Admin Loyalty Config"])
+# FIDELIDADE
+router.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
+router.include_router(admin_loyalty_config.router, prefix="/admin/loyalty-config", tags=["Admin Loyalty Config"])
 
-# REPORTS
-router.include_router(admin_reports.router, prefix="/reports", tags=["Admin Reports"])
+# RELATÓRIOS
+router.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
 
-# SETTINGS
-router.include_router(admin_settings.router, prefix="/settings", tags=["Admin Settings"])
+# CONFIGURAÇÕES
+router.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])

@@ -1,7 +1,7 @@
-# app/routers/admin/admin_addons.py
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
+from sqlalchemy.sql import func
 
 from app.models.admin.admin_addon import Addon
 from app.schemas.admin.admin_addon import AddonCreate, AddonUpdate, AddonOut
@@ -16,7 +16,11 @@ router = APIRouter(tags=["Admin - Addons"])
 def create_addon(addon: AddonCreate, db: Session = Depends(get_db)):
     """Cria um novo adicional no sistema"""
     try:
-        new_addon = Addon(**addon.dict())
+        new_addon = Addon(
+            **addon.dict(),
+            created_at=func.now(),
+            updated_at=func.now()
+        )
         db.add(new_addon)
         db.commit()
         db.refresh(new_addon)
@@ -40,12 +44,10 @@ def list_addons(
     Permite busca opcional por nome.
     """
     query = db.query(Addon)
-
     if not all:
         query = query.filter(Addon.active == True)
     if search:
         query = query.filter(Addon.name.ilike(f"%{search}%"))
-
     return query.order_by(Addon.position.asc(), Addon.name.asc()).all()
 
 
@@ -70,10 +72,10 @@ def update_addon(addon_id: int, addon: AddonUpdate, db: Session = Depends(get_db
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
-
     try:
         for key, value in addon.dict(exclude_unset=True).items():
             setattr(db_addon, key, value)
+        db_addon.updated_at = func.now()
         db.commit()
         db.refresh(db_addon)
         return db_addon
@@ -91,7 +93,6 @@ def delete_addon(addon_id: int, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
-
     try:
         db.delete(db_addon)
         db.commit()
@@ -110,9 +111,9 @@ def toggle_addon(addon_id: int, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
-
     try:
         db_addon.active = not db_addon.active
+        db_addon.updated_at = func.now()
         db.commit()
         db.refresh(db_addon)
         return db_addon
@@ -130,9 +131,9 @@ def update_position(addon_id: int, position: int = Query(...), db: Session = Dep
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
-
     try:
         db_addon.position = position
+        db_addon.updated_at = func.now()
         db.commit()
         db.refresh(db_addon)
         return db_addon

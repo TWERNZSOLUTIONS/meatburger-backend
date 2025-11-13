@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.database import Base
-from datetime import datetime
 
 class Loyalty(Base):
     __tablename__ = "loyalty"
@@ -14,7 +14,7 @@ class Loyalty(Base):
     total_orders = Column(Integer, default=0)
     reward_threshold = Column(Integer, default=10)  # Número de pedidos para ganhar prêmio
     reward_claimed = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     customer = relationship("Customer", back_populates="loyalties")

@@ -41,36 +41,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ================================
-#       INCLUSÃO DOS ROUTERS
-# ================================
-
-# AUTH
+# -------------------------
+# Routers Admin
+# -------------------------
 app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
-
-# PRODUCTS
 app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
-
-# ADDONS
 app.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
-
-# CATEGORIES
 app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
-
-# COUPONS
 app.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
-
-# LOYALTY
 app.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
 app.include_router(admin_loyalty_config.router, prefix="/admin/loyalty-config", tags=["Admin Loyalty Config"])
-
-# SETTINGS
 app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
-
-# REPORTS
 app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
-
-# ORDERS
 app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
 
 # Servir uploads

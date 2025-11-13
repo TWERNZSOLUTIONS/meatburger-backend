@@ -16,6 +16,7 @@ class AdminOrder(Base):
     observations = Column(String, nullable=True)
     delivery_fee = Column(Float, nullable=False, default=0.0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     def __repr__(self):
         return f"<AdminOrder(order_number={self.order_number}, total={self.total})>"

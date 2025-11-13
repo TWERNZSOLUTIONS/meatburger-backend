@@ -1,7 +1,6 @@
-# app/models/admin/admin_product.py
 from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from sqlalchemy.sql import func
 from app.database import Base
 
 class Product(Base):
@@ -19,8 +18,8 @@ class Product(Base):
     active = Column(Boolean, default=True)
     position = Column(Integer, default=0)
     burger_of_the_month = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relação com categoria
     category = relationship("Category", back_populates="products")

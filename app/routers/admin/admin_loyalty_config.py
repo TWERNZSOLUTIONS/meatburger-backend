@@ -6,7 +6,7 @@ from app.schemas.admin.admin_loyalty_config import LoyaltyConfigOut, LoyaltyConf
 
 router = APIRouter(tags=["Admin Loyalty Config"])
 
-# Obter configuração por ID
+# 🔹 Obter configuração por ID
 @router.get("/{config_id}", response_model=LoyaltyConfigOut)
 def get_config(config_id: int, db: Session = Depends(get_db)):
     config = db.query(LoyaltyConfig).filter(LoyaltyConfig.id == config_id).first()
@@ -14,7 +14,7 @@ def get_config(config_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Configuração não encontrada")
     return config
 
-# Atualizar configuração
+# 🔹 Atualizar configuração
 @router.put("/{config_id}", response_model=LoyaltyConfigOut)
 def update_config(config_id: int, data: LoyaltyConfigUpdate, db: Session = Depends(get_db)):
     config = db.query(LoyaltyConfig).filter(LoyaltyConfig.id == config_id).first()

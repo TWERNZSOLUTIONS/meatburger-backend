@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from app.database import Base
-from datetime import datetime
 
 class Category(Base):
     __tablename__ = "categories"
@@ -11,8 +11,8 @@ class Category(Base):
     description = Column(Text, nullable=True)
     position = Column(Integer, default=0)  # Ordem no cardápio
     active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     # Relacionamento com produtos
     products = relationship("Product", back_populates="category", cascade="all, delete")

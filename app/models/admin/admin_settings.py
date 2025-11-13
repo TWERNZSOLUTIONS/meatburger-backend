@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, Time, JSON, DateTime
+from sqlalchemy.sql import func
 from app.database import Base
-from datetime import datetime
 
 class SiteSettings(Base):
     __tablename__ = "site_settings"
@@ -25,5 +25,5 @@ class SiteSettings(Base):
     whatsapp_link = Column(String, nullable=True)
 
     # Datas
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

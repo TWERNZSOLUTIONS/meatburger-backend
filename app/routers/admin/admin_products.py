@@ -9,7 +9,7 @@ from app.models.admin.admin_category import Category
 from app.schemas.admin.admin_product import ProductOut
 from app.database import get_db
 
-router = APIRouter(tags=["Admin Produtos"])
+router = APIRouter(tags=["Admin Products"])  # 🔹 tag padronizada
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -26,11 +26,7 @@ def create_product(
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
 ):
-    category = (
-        db.query(Category)
-        .filter(Category.id == category_id, Category.active == True)
-        .first()
-    )
+    category = db.query(Category).filter(Category.id == category_id, Category.active == True).first()
     if not category:
         raise HTTPException(status_code=404, detail="Categoria não encontrada ou inativa")
 
@@ -38,7 +34,7 @@ def create_product(
     if burger_of_the_month:
         db.query(Product).update({Product.burger_of_the_month: False})
 
-    # Salvar imagem, se enviada
+    # Salvar imagem
     image_url = None
     if image:
         file_path = os.path.join(UPLOAD_DIR, image.filename)
@@ -64,12 +60,10 @@ def create_product(
     db.refresh(db_product)
     return db_product
 
-
 # ----------------- Listar produtos -----------------
 @router.get("/", response_model=List[ProductOut])
 def list_products(db: Session = Depends(get_db)):
     return db.query(Product).order_by(Product.burger_of_the_month.desc(), Product.position.asc()).all()
-
 
 # ----------------- Obter produto -----------------
 @router.get("/{product_id}", response_model=ProductOut)
@@ -78,7 +72,6 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     return db_product
-
 
 # ----------------- Atualizar produto -----------------
 @router.put("/{product_id}", response_model=ProductOut)
@@ -97,7 +90,6 @@ def update_product(
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
 
-    # Atualiza campos se informados
     if name is not None:
         db_product.name = name
     if description is not None:
@@ -112,7 +104,6 @@ def update_product(
         db.query(Product).update({Product.burger_of_the_month: False})
         db_product.burger_of_the_month = burger_of_the_month
 
-    # Atualiza imagem, se nova for enviada
     if image:
         file_path = os.path.join(UPLOAD_DIR, image.filename)
         try:
@@ -126,7 +117,6 @@ def update_product(
     db.refresh(db_product)
     return db_product
 
-
 # ----------------- Deletar produto -----------------
 @router.delete("/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db)):
@@ -138,11 +128,9 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Produto deletado com sucesso"}
 
-
-# ----------------- Upload de imagem isolado (opcional) -----------------
+# ----------------- Upload de imagem isolado -----------------
 @router.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...)):
-    """Permite enviar imagem separadamente e retorna URL"""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 
