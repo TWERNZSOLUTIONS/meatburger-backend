@@ -32,7 +32,8 @@ app = FastAPI(
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
-    "http://localhost:3000",  # Desenvolvimento local
+    #"http://127.0.0.1:5173",
+    #"http://localhost:5173",  # frontend local
 ]
 
 app.add_middleware(
