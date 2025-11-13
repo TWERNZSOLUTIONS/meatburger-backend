@@ -3,14 +3,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-# routers admin (imports iguais aos seus)
-from app.routers import (
+# Importa routers admin
+from app.routers.admin import (
     admin_auth,
     admin_products,
     admin_addons,
     admin_categories,
     admin_coupons,
     admin_loyalty,
+    admin_loyalty_config,
     admin_settings,
     admin_reports,
     admin_orders,
@@ -22,7 +23,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS: permitir domínios de produção e desenvolvimento local
+# CORS
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
@@ -40,41 +41,39 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === Inclui routers principais ===
-# Mantém os prefixes /admin/... (prod) e adiciona aliases sem /admin para compatibilidade
-# Admin auth: disponível em /admin/auth/* e também em /admin/* (ex: /admin/login)
+# ================================
+#       INCLUSÃO DOS ROUTERS
+# ================================
+
+# AUTH
 app.include_router(admin_auth.router, prefix="/admin/auth", tags=["Admin Auth"])
-app.include_router(admin_auth.router, prefix="/admin", tags=["Admin Auth (alias)"])
 
-# Produtos (disponível em /admin/products e também em /products)
+# PRODUCTS
 app.include_router(admin_products.router, prefix="/admin/products", tags=["Admin Products"])
-app.include_router(admin_products.router, prefix="/products", tags=["Products (alias)"])
 
-# Addons (disponível em /admin/addons e também em /addons)
+# ADDONS
 app.include_router(admin_addons.router, prefix="/admin/addons", tags=["Admin Addons"])
-app.include_router(admin_addons.router, prefix="/addons", tags=["Addons (alias)"])
 
-# Categories (disponível em /admin/categories e também em /categories)
+# CATEGORIES
 app.include_router(admin_categories.router, prefix="/admin/categories", tags=["Admin Categories"])
-app.include_router(admin_categories.router, prefix="/categories", tags=["Categories (alias)"])
 
-# Coupons, Loyalty, Settings, Reports, Orders — mesmos prefixes duplos
+# COUPONS
 app.include_router(admin_coupons.router, prefix="/admin/coupons", tags=["Admin Coupons"])
-app.include_router(admin_coupons.router, prefix="/coupons", tags=["Coupons (alias)"])
 
+# LOYALTY
 app.include_router(admin_loyalty.router, prefix="/admin/loyalty", tags=["Admin Loyalty"])
-app.include_router(admin_loyalty.router, prefix="/loyalty", tags=["Loyalty (alias)"])
+app.include_router(admin_loyalty_config.router, prefix="/admin/loyalty-config", tags=["Admin Loyalty Config"])
 
+# SETTINGS
 app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin Settings"])
-app.include_router(admin_settings.router, prefix="/settings", tags=["Settings (alias)"])
 
+# REPORTS
 app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
-app.include_router(admin_reports.router, prefix="/reports", tags=["Reports (alias)"])
 
+# ORDERS
 app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
-app.include_router(admin_orders.router, prefix="/orders", tags=["Orders (alias)"])
 
-# Serve uploads (permite acesso a imagens em /uploads)
+# Servir uploads
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
