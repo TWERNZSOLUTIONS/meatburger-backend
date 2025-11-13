@@ -3,8 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+
 # routers admin (imports iguais aos seus)
-from app.routers import (
+from app.routers.admin import (
     admin_auth,
     admin_products,
     admin_addons,
