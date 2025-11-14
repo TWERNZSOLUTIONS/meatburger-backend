@@ -21,13 +21,14 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
 
     access_token = create_access_token({"sub": admin.username})
 
-    return AdminResponse.model_validate(
-        id=admin.id,
-        username=admin.username,
-        email=admin.email,
-        access_token=access_token,
-        token_type="bearer"
-    )
+    return AdminResponse(
+    id=admin.id,
+    username=admin.username,
+    email=admin.email,
+    token=access_token,
+    token_type="bearer"
+)
+
 
 # ----------------- Status Auth -----------------
 @router.get("/check")
