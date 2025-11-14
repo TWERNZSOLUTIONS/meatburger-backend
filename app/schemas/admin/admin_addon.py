@@ -10,7 +10,6 @@ class AddonBase(BaseModel):
     price: float
     position: Optional[int] = 0
     active: Optional[bool] = True
-    # image_url: Optional[str] = None  # (para futura expansão)
 
 
 # ----------------- Schema para criação -----------------
@@ -24,7 +23,6 @@ class AddonUpdate(BaseModel):
     price: Optional[float] = None
     position: Optional[int] = None
     active: Optional[bool] = None
-    # image_url: Optional[str] = None
 
 
 # ----------------- Schema de retorno -----------------
@@ -34,4 +32,4 @@ class AddonOut(AddonBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True  # substitui orm_mode no Pydantic 2.x
+        from_attributes = True

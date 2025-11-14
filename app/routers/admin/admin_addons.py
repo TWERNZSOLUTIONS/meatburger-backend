@@ -7,14 +7,10 @@ from app.models.admin.admin_addon import Addon
 from app.schemas.admin.admin_addon import AddonCreate, AddonUpdate, AddonOut
 from app.database import get_db
 
-router = APIRouter(tags=["Admin - Addons"])
+router = APIRouter(tags=["Admin Addons"])
 
-# ======================================================
-# 🔹 Criar adicional
-# ======================================================
-@router.post("/", response_model=AddonOut, status_code=201)
+@router.post("/addons/", response_model=AddonOut, status_code=201)
 def create_addon(addon: AddonCreate, db: Session = Depends(get_db)):
-    """Cria um novo adicional no sistema"""
     try:
         new_addon = Addon(
             **addon.dict(),
@@ -29,20 +25,12 @@ def create_addon(addon: AddonCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao criar adicional: {str(e)}")
 
-
-# ======================================================
-# 🔹 Listar adicionais
-# ======================================================
-@router.get("/", response_model=List[AddonOut])
+@router.get("/addons/", response_model=List[AddonOut])
 def list_addons(
     db: Session = Depends(get_db),
     all: bool = Query(False, description="Se true, lista também inativos."),
     search: Optional[str] = Query(None, description="Busca pelo nome do adicional."),
 ):
-    """
-    Retorna lista de adicionais ativos (ou todos, se `all=True`).
-    Permite busca opcional por nome.
-    """
     query = db.query(Addon)
     if not all:
         query = query.filter(Addon.active == True)
@@ -50,25 +38,15 @@ def list_addons(
         query = query.filter(Addon.name.ilike(f"%{search}%"))
     return query.order_by(Addon.position.asc(), Addon.name.asc()).all()
 
-
-# ======================================================
-# 🔹 Obter adicional por ID
-# ======================================================
-@router.get("/{addon_id}", response_model=AddonOut)
+@router.get("/addons/{addon_id}", response_model=AddonOut)
 def get_addon(addon_id: int, db: Session = Depends(get_db)):
-    """Obtém um adicional específico pelo ID"""
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
     return db_addon
 
-
-# ======================================================
-# 🔹 Atualizar adicional
-# ======================================================
-@router.put("/{addon_id}", response_model=AddonOut)
+@router.put("/addons/{addon_id}", response_model=AddonOut)
 def update_addon(addon_id: int, addon: AddonUpdate, db: Session = Depends(get_db)):
-    """Atualiza os dados de um adicional existente"""
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
@@ -83,13 +61,8 @@ def update_addon(addon_id: int, addon: AddonUpdate, db: Session = Depends(get_db
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar adicional: {str(e)}")
 
-
-# ======================================================
-# 🔹 Deletar adicional
-# ======================================================
-@router.delete("/{addon_id}")
+@router.delete("/addons/{addon_id}")
 def delete_addon(addon_id: int, db: Session = Depends(get_db)):
-    """Remove um adicional definitivamente do sistema"""
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
@@ -101,13 +74,8 @@ def delete_addon(addon_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao deletar adicional: {str(e)}")
 
-
-# ======================================================
-# 🔹 Ativar/Desativar adicional (toggle)
-# ======================================================
-@router.patch("/{addon_id}/toggle", response_model=AddonOut)
+@router.patch("/addons/{addon_id}/toggle", response_model=AddonOut)
 def toggle_addon(addon_id: int, db: Session = Depends(get_db)):
-    """Ativa ou desativa um adicional"""
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
@@ -121,13 +89,8 @@ def toggle_addon(addon_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao alternar adicional: {str(e)}")
 
-
-# ======================================================
-# 🔹 Reordenar posição do adicional
-# ======================================================
-@router.patch("/{addon_id}/position", response_model=AddonOut)
+@router.patch("/addons/{addon_id}/position", response_model=AddonOut)
 def update_position(addon_id: int, position: int = Query(...), db: Session = Depends(get_db)):
-    """Atualiza a posição (ordem) de exibição de um adicional"""
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
     if not db_addon:
         raise HTTPException(status_code=404, detail="Adicional não encontrado")

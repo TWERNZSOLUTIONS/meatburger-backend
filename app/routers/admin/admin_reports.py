@@ -8,13 +8,9 @@ from app.database import get_db
 from app.models.admin.admin_order import AdminOrder
 from app.schemas.admin.admin_reports import PaymentMethodReport, TimePeriodReport
 
-router = APIRouter(
-    prefix="/reports",  # 🔹 prefixo padronizado
-    tags=["Admin Reports"]
-)
+router = APIRouter(tags=["Admin Reports"])
 
-# ----------------- Relatório financeiro por período -----------------
-@router.get("/finance", response_model=TimePeriodReport)
+@router.get("/reports/finance", response_model=TimePeriodReport)
 def finance_report(days: int = 30, db: Session = Depends(get_db)):
     period_start = datetime.utcnow() - timedelta(days=days)
     period_end = datetime.utcnow()
@@ -34,8 +30,7 @@ def finance_report(days: int = 30, db: Session = Depends(get_db)):
         total_revenue=float(total_revenue),
     )
 
-# ----------------- Relatório por forma de pagamento -----------------
-@router.get("/payment_methods", response_model=List[PaymentMethodReport])
+@router.get("/reports/payment_methods", response_model=List[PaymentMethodReport])
 def payment_method_report(db: Session = Depends(get_db)):
     results = (
         db.query(

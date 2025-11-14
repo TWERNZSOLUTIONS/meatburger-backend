@@ -9,13 +9,12 @@ from app.models.admin.admin_category import Category
 from app.schemas.admin.admin_product import ProductOut
 from app.database import get_db
 
-router = APIRouter(tags=["Admin Products"])  # 🔹 tag padronizada
+router = APIRouter(tags=["Admin Products"])
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ----------------- Criar produto -----------------
-@router.post("/", response_model=ProductOut)
+@router.post("/products/", response_model=ProductOut, status_code=201)
 def create_product(
     name: str = Form(...),
     description: Optional[str] = Form(None),
@@ -30,11 +29,9 @@ def create_product(
     if not category:
         raise HTTPException(status_code=404, detail="Categoria não encontrada ou inativa")
 
-    # Garante apenas 1 burger do mês ativo
     if burger_of_the_month:
         db.query(Product).update({Product.burger_of_the_month: False})
 
-    # Salvar imagem
     image_url = None
     if image:
         file_path = os.path.join(UPLOAD_DIR, image.filename)
@@ -60,21 +57,18 @@ def create_product(
     db.refresh(db_product)
     return db_product
 
-# ----------------- Listar produtos -----------------
-@router.get("/", response_model=List[ProductOut])
+@router.get("/products/", response_model=List[ProductOut])
 def list_products(db: Session = Depends(get_db)):
     return db.query(Product).order_by(Product.burger_of_the_month.desc(), Product.position.asc()).all()
 
-# ----------------- Obter produto -----------------
-@router.get("/{product_id}", response_model=ProductOut)
+@router.get("/products/{product_id}", response_model=ProductOut)
 def get_product(product_id: int, db: Session = Depends(get_db)):
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
     return db_product
 
-# ----------------- Atualizar produto -----------------
-@router.put("/{product_id}", response_model=ProductOut)
+@router.put("/products/{product_id}", response_model=ProductOut)
 def update_product(
     product_id: int,
     name: Optional[str] = Form(None),
@@ -117,19 +111,17 @@ def update_product(
     db.refresh(db_product)
     return db_product
 
-# ----------------- Deletar produto -----------------
-@router.delete("/{product_id}")
+@router.delete("/products/{product_id}")
 def delete_product(product_id: int, db: Session = Depends(get_db)):
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
         raise HTTPException(status_code=404, detail="Produto não encontrado")
-
     db.delete(db_product)
     db.commit()
     return {"detail": "Produto deletado com sucesso"}
 
-# ----------------- Upload de imagem isolado -----------------
-@router.post("/upload-image/")
+# Upload único (compatível com frontend: apiAdmin.post("/upload", formData))
+@router.post("/upload", status_code=201)
 async def upload_image(file: UploadFile = File(...)):
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     file_path = os.path.join(UPLOAD_DIR, file.filename)

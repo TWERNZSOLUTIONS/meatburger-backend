@@ -11,10 +11,8 @@ from app.database import get_db
 
 router = APIRouter(tags=["Admin Coupons"])
 
-# ----------------- Criar cupom -----------------
-@router.post("/", response_model=CouponOut)
+@router.post("/coupons/", response_model=CouponOut, status_code=201)
 def create_coupon(coupon: CouponCreate, db: Session = Depends(get_db)):
-    """Cria um novo cupom e vincula produtos se fornecidos."""
     try:
         db_coupon = Coupon(**{k: v for k, v in coupon.dict(exclude={"product_ids"}).items()})
         db_coupon.created_at = func.now()
@@ -29,28 +27,19 @@ def create_coupon(coupon: CouponCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao criar cupom: {str(e)}")
 
-
-# ----------------- Listar cupons -----------------
-@router.get("/", response_model=List[CouponOut])
+@router.get("/coupons/", response_model=List[CouponOut])
 def list_coupons(db: Session = Depends(get_db)):
-    """Lista todos os cupons ordenados pela validade decrescente."""
     return db.query(Coupon).order_by(Coupon.valid_until.desc()).all()
 
-
-# ----------------- Obter cupom por ID -----------------
-@router.get("/{coupon_id}", response_model=CouponOut)
+@router.get("/coupons/{coupon_id}", response_model=CouponOut)
 def get_coupon(coupon_id: int, db: Session = Depends(get_db)):
-    """Retorna um cupom específico pelo ID."""
     db_coupon = db.query(Coupon).filter(Coupon.id == coupon_id).first()
     if not db_coupon:
         raise HTTPException(status_code=404, detail="Cupom não encontrado")
     return db_coupon
 
-
-# ----------------- Atualizar cupom -----------------
-@router.put("/{coupon_id}", response_model=CouponOut)
+@router.put("/coupons/{coupon_id}", response_model=CouponOut)
 def update_coupon(coupon_id: int, coupon: CouponUpdate, db: Session = Depends(get_db)):
-    """Atualiza um cupom existente e vincula produtos se fornecidos."""
     db_coupon = db.query(Coupon).filter(Coupon.id == coupon_id).first()
     if not db_coupon:
         raise HTTPException(status_code=404, detail="Cupom não encontrado")
@@ -67,11 +56,8 @@ def update_coupon(coupon_id: int, coupon: CouponUpdate, db: Session = Depends(ge
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar cupom: {str(e)}")
 
-
-# ----------------- Deletar cupom -----------------
-@router.delete("/{coupon_id}")
+@router.delete("/coupons/{coupon_id}")
 def delete_coupon(coupon_id: int, db: Session = Depends(get_db)):
-    """Deleta um cupom pelo ID."""
     db_coupon = db.query(Coupon).filter(Coupon.id == coupon_id).first()
     if not db_coupon:
         raise HTTPException(status_code=404, detail="Cupom não encontrado")
@@ -83,11 +69,8 @@ def delete_coupon(coupon_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao deletar cupom: {str(e)}")
 
-
-# ----------------- Validar cupom -----------------
-@router.get("/validate/{code}", response_model=CouponOut)
+@router.get("/coupons/validate/{code}", response_model=CouponOut)
 def validate_coupon(code: str, db: Session = Depends(get_db)):
-    """Valida se um cupom está ativo e dentro do período de validade."""
     now = datetime.utcnow()
     db_coupon = db.query(Coupon).filter(
         Coupon.code == code,

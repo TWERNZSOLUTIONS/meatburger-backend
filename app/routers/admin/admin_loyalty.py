@@ -9,10 +9,8 @@ from app.database import get_db
 
 router = APIRouter(tags=["Admin Loyalty"])
 
-# ----------------- Criar registro de fidelidade -----------------
-@router.post("/", response_model=LoyaltyOut)
+@router.post("/loyalty/", response_model=LoyaltyOut, status_code=201)
 def create_loyalty(loyalty: LoyaltyCreate, db: Session = Depends(get_db)):
-    """Cria um novo registro de fidelidade."""
     try:
         db_loyalty = Loyalty(**loyalty.dict())
         db_loyalty.created_at = func.now()
@@ -25,18 +23,12 @@ def create_loyalty(loyalty: LoyaltyCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao criar registro: {str(e)}")
 
-
-# ----------------- Listar todos os registros -----------------
-@router.get("/", response_model=List[LoyaltyOut])
+@router.get("/loyalty/", response_model=List[LoyaltyOut])
 def list_loyalty(db: Session = Depends(get_db)):
-    """Lista todos os registros de fidelidade ordenados por nome do cliente."""
     return db.query(Loyalty).order_by(Loyalty.customer_name.asc()).all()
 
-
-# ----------------- Atualizar registro -----------------
-@router.put("/{loyalty_id}", response_model=LoyaltyOut)
+@router.put("/loyalty/{loyalty_id}", response_model=LoyaltyOut)
 def update_loyalty(loyalty_id: int, loyalty: LoyaltyUpdate, db: Session = Depends(get_db)):
-    """Atualiza um registro existente de fidelidade."""
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
     if not db_loyalty:
         raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")
@@ -51,11 +43,8 @@ def update_loyalty(loyalty_id: int, loyalty: LoyaltyUpdate, db: Session = Depend
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar registro: {str(e)}")
 
-
-# ----------------- Deletar registro -----------------
-@router.delete("/{loyalty_id}")
+@router.delete("/loyalty/{loyalty_id}")
 def delete_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
-    """Deleta um registro de fidelidade pelo ID."""
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
     if not db_loyalty:
         raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")
@@ -67,11 +56,8 @@ def delete_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao deletar registro: {str(e)}")
 
-
-# ----------------- Incrementar pedidos do cliente -----------------
-@router.post("/{loyalty_id}/increment", response_model=LoyaltyOut)
+@router.post("/loyalty/{loyalty_id}/increment", response_model=LoyaltyOut)
 def increment_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
-    """Incrementa o total de pedidos e pontos do cliente."""
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
     if not db_loyalty:
         raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")
@@ -86,11 +72,8 @@ def increment_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao incrementar fidelidade: {str(e)}")
 
-
-# ----------------- Marcar cliente como premiado -----------------
-@router.post("/{loyalty_id}/reward", response_model=LoyaltyOut)
+@router.post("/loyalty/{loyalty_id}/reward", response_model=LoyaltyOut)
 def reward_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
-    """Marca um cliente como premiado."""
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
     if not db_loyalty:
         raise HTTPException(status_code=404, detail="Registro de fidelidade não encontrado")

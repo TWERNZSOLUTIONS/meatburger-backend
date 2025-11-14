@@ -3,8 +3,6 @@ from sqlalchemy import Column, Integer, String, TIMESTAMP, func
 from app.database import Base
 
 class Admin(Base):
-    """Model para administradores do sistema."""
-
     __tablename__ = "admins"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -9,10 +9,10 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
-    position = Column(Integer, default=0)  # Ordem no cardápio
+    position = Column(Integer, default=0)
     active = Column(Boolean, default=True)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # Relacionamento com produtos
     products = relationship("Product", back_populates="category", cascade="all, delete")
