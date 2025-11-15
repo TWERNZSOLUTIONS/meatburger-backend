@@ -1,3 +1,4 @@
+# admin_products.py
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -14,7 +15,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # --------------------------
-# CRIAR PRODUTO
+# CRIAR PRODUTO (com upload obrigatório)
 # --------------------------
 @router.post("/products/", response_model=ProductOut, status_code=201)
 def create_product(
@@ -87,7 +88,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 
 # --------------------------
-# ATUALIZAR PRODUTO
+# ATUALIZAR PRODUTO (upload opcional)
 # --------------------------
 @router.put("/products/{product_id}", response_model=ProductOut)
 def update_product(
@@ -112,7 +113,6 @@ def update_product(
     if price is not None:
         db_product.price = price
     if category_id is not None:
-        # valida categoria antes de atualizar
         category = db.query(Category).filter(Category.id == category_id, Category.active == True).first()
         if not category:
             raise HTTPException(status_code=404, detail="Categoria não encontrada ou inativa")
@@ -153,7 +153,7 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 
 
 # --------------------------
-# UPLOAD DE IMAGEM SEPARADO
+# UPLOAD DE IMAGEM SEPARADO (opcional)
 # --------------------------
 @router.post("/upload", status_code=201)
 async def upload_image(file: UploadFile = File(...)):
