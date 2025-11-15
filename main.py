@@ -23,11 +23,13 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS
+# -------------------------
+# Configuração CORS
+# -------------------------
 origins = [
     "https://meatburger.com.py",
     "https://www.meatburger.com.py",
-    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5173",  # para testes locais
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "http://localhost:3000",
@@ -35,10 +37,10 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=origins,       # permite apenas as origens listadas
+    allow_credentials=True,      # permite cookies e tokens de autenticação
+    allow_methods=["*"],         # GET, POST, PUT, DELETE...
+    allow_headers=["*"],         # todos os cabeçalhos HTTP
 )
 
 # -------------------------
@@ -55,9 +57,14 @@ app.include_router(admin_settings.router, prefix="/admin/settings", tags=["Admin
 app.include_router(admin_reports.router, prefix="/admin/reports", tags=["Admin Reports"])
 app.include_router(admin_orders.router, prefix="/admin/orders", tags=["Admin Orders"])
 
+# -------------------------
 # Servir uploads
+# -------------------------
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
+# -------------------------
+# Rota raiz
+# -------------------------
 @app.get("/")
 def read_root():
     return {"message": "🚀 API do Delivery rodando perfeitamente no Render!"}
