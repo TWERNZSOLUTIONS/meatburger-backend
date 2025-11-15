@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, ConfigDict, Field
+from pydantic import BaseModel, HttpUrl, Field, ConfigDict
 from typing import List, Optional
 from datetime import time, datetime
 

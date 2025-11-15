@@ -30,6 +30,7 @@ def finance_report(days: int = 30, db: Session = Depends(get_db)):
         total_revenue=float(total_revenue),
     )
 
+
 @router.get("/reports/payment_methods", response_model=List[PaymentMethodReport])
 def payment_method_report(db: Session = Depends(get_db)):
     results = (
@@ -42,7 +43,7 @@ def payment_method_report(db: Session = Depends(get_db)):
         .all()
     )
 
-    report = [
+    return [
         PaymentMethodReport(
             payment_method=payment_method,
             total_orders=total_orders,
@@ -50,5 +51,3 @@ def payment_method_report(db: Session = Depends(get_db)):
         )
         for payment_method, total_orders, total_revenue in results
     ]
-
-    return report

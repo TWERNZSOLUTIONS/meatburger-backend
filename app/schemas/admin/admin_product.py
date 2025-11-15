@@ -33,8 +33,8 @@ class ProductUpdate(BaseModel):
 
 class ProductOut(ProductBase):
     id: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None  # ⚠ Alterado para Optional
+    updated_at: Optional[datetime] = None  # ⚠ Alterado para Optional
 
     class Config:
         from_attributes = True

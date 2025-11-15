@@ -9,14 +9,13 @@ from app.database import get_db
 
 router = APIRouter(tags=["Admin Addons"])
 
+# --------------------------
+# CRIAR ADICIONAL
+# --------------------------
 @router.post("/addons/", response_model=AddonOut, status_code=201)
 def create_addon(addon: AddonCreate, db: Session = Depends(get_db)):
     try:
-        new_addon = Addon(
-            **addon.dict(),
-            created_at=func.now(),
-            updated_at=func.now()
-        )
+        new_addon = Addon(**addon.dict(), created_at=func.now(), updated_at=func.now())
         db.add(new_addon)
         db.commit()
         db.refresh(new_addon)
@@ -25,6 +24,9 @@ def create_addon(addon: AddonCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao criar adicional: {str(e)}")
 
+# --------------------------
+# LISTAR ADICIONAIS
+# --------------------------
 @router.get("/addons/", response_model=List[AddonOut])
 def list_addons(
     db: Session = Depends(get_db),
@@ -38,6 +40,9 @@ def list_addons(
         query = query.filter(Addon.name.ilike(f"%{search}%"))
     return query.order_by(Addon.position.asc(), Addon.name.asc()).all()
 
+# --------------------------
+# BUSCAR ADICIONAL POR ID
+# --------------------------
 @router.get("/addons/{addon_id}", response_model=AddonOut)
 def get_addon(addon_id: int, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
@@ -45,6 +50,9 @@ def get_addon(addon_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Adicional não encontrado")
     return db_addon
 
+# --------------------------
+# ATUALIZAR ADICIONAL
+# --------------------------
 @router.put("/addons/{addon_id}", response_model=AddonOut)
 def update_addon(addon_id: int, addon: AddonUpdate, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
@@ -61,6 +69,9 @@ def update_addon(addon_id: int, addon: AddonUpdate, db: Session = Depends(get_db
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar adicional: {str(e)}")
 
+# --------------------------
+# DELETAR ADICIONAL
+# --------------------------
 @router.delete("/addons/{addon_id}")
 def delete_addon(addon_id: int, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
@@ -74,6 +85,9 @@ def delete_addon(addon_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao deletar adicional: {str(e)}")
 
+# --------------------------
+# TOGGLE ATIVO/INATIVO
+# --------------------------
 @router.patch("/addons/{addon_id}/toggle", response_model=AddonOut)
 def toggle_addon(addon_id: int, db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()
@@ -89,6 +103,9 @@ def toggle_addon(addon_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao alternar adicional: {str(e)}")
 
+# --------------------------
+# ATUALIZAR POSIÇÃO
+# --------------------------
 @router.patch("/addons/{addon_id}/position", response_model=AddonOut)
 def update_position(addon_id: int, position: int = Query(...), db: Session = Depends(get_db)):
     db_addon = db.query(Addon).filter(Addon.id == addon_id).first()

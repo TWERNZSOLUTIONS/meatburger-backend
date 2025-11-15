@@ -1,31 +1,22 @@
-# app/schemas/admin/admin_addon.py
 from pydantic import BaseModel, constr
 from typing import Optional
 from datetime import datetime
 
-
-# ----------------- Schemas base -----------------
 class AddonBase(BaseModel):
-    name: constr(max_length=100)
+    name: constr(max_length=255)  # mais consistente com produtos
     price: float
     position: Optional[int] = 0
     active: Optional[bool] = True
 
-
-# ----------------- Schema para criação -----------------
 class AddonCreate(AddonBase):
     pass
 
-
-# ----------------- Schema para atualização -----------------
 class AddonUpdate(BaseModel):
-    name: Optional[constr(max_length=100)] = None
+    name: Optional[constr(max_length=255)] = None
     price: Optional[float] = None
     position: Optional[int] = None
     active: Optional[bool] = None
 
-
-# ----------------- Schema de retorno -----------------
 class AddonOut(AddonBase):
     id: int
     created_at: datetime

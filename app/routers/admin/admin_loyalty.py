@@ -9,6 +9,7 @@ from app.database import get_db
 
 router = APIRouter(tags=["Admin Loyalty"])
 
+# -------------------------- CREATE --------------------------
 @router.post("/loyalty/", response_model=LoyaltyOut, status_code=201)
 def create_loyalty(loyalty: LoyaltyCreate, db: Session = Depends(get_db)):
     try:
@@ -23,10 +24,15 @@ def create_loyalty(loyalty: LoyaltyCreate, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao criar registro: {str(e)}")
 
+# -------------------------- LIST --------------------------
 @router.get("/loyalty/", response_model=List[LoyaltyOut])
 def list_loyalty(db: Session = Depends(get_db)):
-    return db.query(Loyalty).order_by(Loyalty.customer_name.asc()).all()
+    try:
+        return db.query(Loyalty).order_by(Loyalty.customer_name.asc()).all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar registros: {str(e)}")
 
+# -------------------------- UPDATE --------------------------
 @router.put("/loyalty/{loyalty_id}", response_model=LoyaltyOut)
 def update_loyalty(loyalty_id: int, loyalty: LoyaltyUpdate, db: Session = Depends(get_db)):
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
@@ -43,6 +49,7 @@ def update_loyalty(loyalty_id: int, loyalty: LoyaltyUpdate, db: Session = Depend
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao atualizar registro: {str(e)}")
 
+# -------------------------- DELETE --------------------------
 @router.delete("/loyalty/{loyalty_id}")
 def delete_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
@@ -56,6 +63,7 @@ def delete_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao deletar registro: {str(e)}")
 
+# -------------------------- INCREMENT --------------------------
 @router.post("/loyalty/{loyalty_id}/increment", response_model=LoyaltyOut)
 def increment_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
@@ -72,6 +80,7 @@ def increment_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Erro ao incrementar fidelidade: {str(e)}")
 
+# -------------------------- REWARD --------------------------
 @router.post("/loyalty/{loyalty_id}/reward", response_model=LoyaltyOut)
 def reward_loyalty(loyalty_id: int, db: Session = Depends(get_db)):
     db_loyalty = db.query(Loyalty).filter(Loyalty.id == loyalty_id).first()
