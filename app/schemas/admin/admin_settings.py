@@ -1,21 +1,39 @@
 from pydantic import BaseModel, HttpUrl, Field, ConfigDict
-from typing import List, Optional
-from datetime import time, datetime
+from typing import Optional, Dict
+from datetime import datetime
+
+# Configuração de cada dia da semana
+class DayConfig(BaseModel):
+    enabled: bool
+    open: str
+    close: str
+
+# Fechamento manual
+class ManualClose(BaseModel):
+    enabled: bool = False
+    reason: str = ""
 
 class SiteSettingsBase(BaseModel):
-    opening_time: Optional[time] = None
-    closing_time: Optional[time] = None
-    days_open: Optional[List[str]] = Field(default_factory=list)
-    open: Optional[bool] = True
-    closed_message: Optional[str] = None
+    days: Dict[str, DayConfig]
+    manualClose: ManualClose
+
+    open: Optional[int] = 1  # <- STATUS FINAL DA LOJA (adicionado)
+
+    store_name: Optional[str] = None
+    store_phone: Optional[str] = None
+    store_address: Optional[str] = None
+
     instagram_link: Optional[HttpUrl] = None
     whatsapp_link: Optional[HttpUrl] = None
+
 
 class SiteSettingsCreate(SiteSettingsBase):
     pass
 
+
 class SiteSettingsUpdate(SiteSettingsBase):
     pass
+
 
 class SiteSettingsOut(SiteSettingsBase):
     id: int
