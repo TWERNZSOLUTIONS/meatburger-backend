@@ -14,13 +14,11 @@ def get_settings(db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Configuração do site não encontrada")
     return settings
 
-
 @router.put("/settings/", response_model=SiteSettingsOut)
 def update_settings(settings_data: SiteSettingsUpdate, db: Session = Depends(get_db)):
     db_settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
     
     if not db_settings:
-        # Cria se não existir
         db_settings = SiteSettings(**settings_data.dict())
         db.add(db_settings)
         db.commit()
@@ -34,7 +32,6 @@ def update_settings(settings_data: SiteSettingsUpdate, db: Session = Depends(get
     db.commit()
     db.refresh(db_settings)
     return db_settings
-
 
 @router.post("/settings/", response_model=SiteSettingsOut, status_code=201)
 def create_settings(settings_data: SiteSettingsCreate, db: Session = Depends(get_db)):
