@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, JSON, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Time, JSON, DateTime
 from sqlalchemy.sql import func
 from app.database import Base
 
@@ -7,34 +7,15 @@ class SiteSettings(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Dias e horários da semana
-    days = Column(JSON, default={
-        "monday":    {"enabled": True, "open": "18:00", "close": "23:00"},
-        "tuesday":   {"enabled": True, "open": "18:00", "close": "23:00"},
-        "wednesday": {"enabled": True, "open": "18:00", "close": "23:00"},
-        "thursday":  {"enabled": True, "open": "18:00", "close": "23:00"},
-        "friday":    {"enabled": True, "open": "18:00", "close": "02:00"},
-        "saturday":  {"enabled": True, "open": "18:00", "close": "02:00"},
-        "sunday":    {"enabled": True, "open": "18:00", "close": "23:00"}
-    })
+    opening_time = Column(Time, nullable=True)
+    closing_time = Column(Time, nullable=True)
+    days_open = Column(JSON, default=list)
 
-    # Fechamento manual pelo administrador
-    manualClose = Column(JSON, default={
-        "enabled": False,
-        "reason": ""
-    })
-
-    # Status calculado da loja (1 = aberta / 0 = fechada)
-    open = Column(Integer, default=1)
-
-    # Informações gerais da loja
-    store_name = Column(String, nullable=True)
-    store_phone = Column(String, nullable=True)
-    store_address = Column(String, nullable=True)
+    open = Column(Boolean, default=True)
+    closed_message = Column(String, nullable=True)
 
     instagram_link = Column(String, nullable=True)
     whatsapp_link = Column(String, nullable=True)
 
-    # Datas de criação e atualização
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
