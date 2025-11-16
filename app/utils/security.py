@@ -5,19 +5,16 @@ from jose import JWTError, jwt
 from dotenv import load_dotenv
 import os
 
-# Carrega variáveis do .env
+# Carrega o .env
 load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hora
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1h
 
-# -------------------------------
-# 🔹 Funções de senha
-# -------------------------------
-def hash_password(password: str) -> str:
+def get_password_hash(password: str) -> str:
     """Gera o hash seguro da senha."""
     return pwd_context.hash(password)
 
@@ -25,9 +22,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica se a senha está correta."""
     return pwd_context.verify(plain_password, hashed_password)
 
-# -------------------------------
-# 🔹 Funções de token JWT
-# -------------------------------
 def create_access_token(data: dict):
     """Cria o token JWT"""
     to_encode = data.copy()
