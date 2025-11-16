@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.admin.admin_schema import AdminLogin, AdminResponse
 from app.models.admin.admin import Admin
-from app.utils.security import verify_password, create_access_token
+from app.utils.security import verify_password, create_access_token, hash_password
+from app.dependencies import get_current_admin  # função que retorna o admin autenticado
 
 router = APIRouter(tags=["Admin Auth"])
 
@@ -20,7 +21,6 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
 
     access_token = create_access_token({"sub": admin.username})
 
-    # Retorna access_token (nome compatível com frontend)
     return AdminResponse(
         id=admin.id,
         username=admin.username,
@@ -32,3 +32,38 @@ def login_admin(data: AdminLogin, db: Session = Depends(get_db)):
 @router.get("/check")
 def check_status():
     return {"status": "Auth ativo e rodando 🚀"}
+
+# -------------------------------
+# 🔹 Novo endpoint para alterar usuário e senha
+# -------------------------------
+from pydantic import BaseModel, constr
+
+class AdminCredentialsUpdate(BaseModel):
+    username: constr(min_length=3)
+    password: constr(min_length=6)
+
+@router.put("/change_credentials", response_model=AdminResponse)
+def change_credentials(
+    data: AdminCredentialsUpdate,
+    db: Session = Depends(get_db),
+    current_admin: Admin = Depends(get_current_admin)
+):
+    """
+    Altera username e senha do admin logado.
+    """
+    # Atualiza username e senha
+    current_admin.username = data.username
+    current_admin.password = hash_password(data.password)
+
+    db.commit()
+    db.refresh(current_admin)
+
+    access_token = create_access_token({"sub": current_admin.username})
+
+    return AdminResponse(
+        id=current_admin.id,
+        username=current_admin.username,
+        email=current_admin.email,
+        access_token=access_token,
+        token_type="bearer"
+    )
