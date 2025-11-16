@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime, time
 from app.database import get_db
-from app.models.admin_settings import SiteSettings
-from app.schemas.admin.admin_settings import (
+from app.models.admin.admin_settings import SiteSettings
+from app.schemas.admin.admin.admin_settings import (
     SiteSettingsCreate,
     SiteSettingsUpdate,
     SiteSettingsOut
