@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Optional
 from datetime import datetime, time
-from database import get_db
-from models.admin_settings import SiteSettings
-from schemas.admin.admin_settings import (
+from app.database import get_db
+from app.models.admin_settings import SiteSettings
+from app.schemas.admin.admin_settings import (
     SiteSettingsCreate,
     SiteSettingsUpdate,
     SiteSettingsOut
@@ -16,32 +16,30 @@ router = APIRouter(
     tags=["Admin Settings"]
 )
 
-# -------------------------------------------
-# FUNÇÃO AUXILIAR DE STATUS AUTOMÁTICO
-# -------------------------------------------
-
+# ------------------------------------------------
+# FUNÇÃO – CÁLCULO DO STATUS DA LOJA
+# ------------------------------------------------
 def calculate_store_status(settings: SiteSettings) -> tuple[bool, Optional[str]]:
     """
-    Retorna:
-        (is_open, message)
+    Retorna (is_open, message)
     """
 
     now = datetime.now()
     today_weekday = now.strftime("%a")  # Seg, Ter, Qua...
 
-    # 1) Fechado manualmente pelo admin
+    # 1 — FECHADO MANUALMENTE
     if settings.manual_close:
         return False, settings.closed_message
 
-    # 2) Hoje não é dia de funcionamento
+    # 2 — DIA NÃO FUNCIONA
     if settings.days_open and today_weekday not in settings.days_open:
         return False, "Hoje não estamos funcionando"
 
-    # 3) Sem horário definido (abre sempre)
+    # 3 — HORÁRIOS INDEFINIDOS → SEMPRE ABERTO
     if not settings.opening_time or not settings.closing_time:
         return True, None
 
-    # 4) Horário automático
+    # 4 — HORÁRIO AUTOMÁTICO
     current_time = now.time()
 
     if settings.opening_time <= current_time <= settings.closing_time:
@@ -51,19 +49,20 @@ def calculate_store_status(settings: SiteSettings) -> tuple[bool, Optional[str]]
 
 
 # ------------------------------------------------
-# GET - PEGAR CONFIGURAÇÕES (usado pelo Painel e pelo Cardápio)
+# GET — BUSCAR CONFIGURAÇÕES
 # ------------------------------------------------
 @router.get("/", response_model=SiteSettingsOut)
 def get_settings(db: Session = Depends(get_db)):
     settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
 
+    # Se não existir, cria padrão
     if not settings:
-        # Criar padrão se não existir
         settings = SiteSettings()
         db.add(settings)
         db.commit()
         db.refresh(settings)
 
+    # Calcula status atual sempre que fizer GET
     is_open, msg = calculate_store_status(settings)
     settings.open = is_open
     settings.closed_message = msg
@@ -72,7 +71,7 @@ def get_settings(db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------
-# CREATE - só usado se não existe (normalmente não usa)
+# CREATE — CRIAR CONFIGURAÇÃO (raramente usado)
 # ------------------------------------------------
 @router.post("/", response_model=SiteSettingsOut)
 def create_settings(
@@ -88,7 +87,7 @@ def create_settings(
 
 
 # ------------------------------------------------
-# UPDATE - AQUI QUE O PAINEL ADMIN MANDA TUDO
+# UPDATE — ATUALIZA TUDO VIA PAINEL ADMIN
 # ------------------------------------------------
 @router.put("/", response_model=SiteSettingsOut)
 def update_settings(
@@ -99,24 +98,24 @@ def update_settings(
     settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
 
     if not settings:
-        raise HTTPException(status_code=404, detail="Configurações não encontradas")
+        raise HTTPException(404, "Configurações não encontradas")
 
-    # ----------- VALIDAÇÃO: Horários -----------
+    # Validação horário
     if payload.opening_time and payload.closing_time:
         if payload.opening_time >= payload.closing_time:
             raise HTTPException(
-                status_code=400,
-                detail="O horário de abertura deve ser antes do horário de fechamento."
+                400,
+                "O horário de abertura deve ser antes do fechamento."
             )
 
-    # ----------- Atualizar dados -----------
+    # Atualiza apenas campos enviados
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(settings, field, value)
 
     db.commit()
     db.refresh(settings)
 
-    # Atualiza o status ao salvar
+    # Recalcula status depois de salvar
     is_open, msg = calculate_store_status(settings)
     settings.open = is_open
     settings.closed_message = msg
@@ -125,7 +124,7 @@ def update_settings(
 
 
 # ------------------------------------------------
-# ROTA EXCLUSIVA PARA O ADMIN FECHAR MANUALMENTE
+# FECHAR MANUALMENTE
 # ------------------------------------------------
 @router.put("/manual-close", response_model=SiteSettingsOut)
 def manual_close(
@@ -136,7 +135,7 @@ def manual_close(
     settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
 
     if not settings:
-        raise HTTPException(status_code=404, detail="Configurações não encontradas")
+        raise HTTPException(404, "Configurações não encontradas")
 
     settings.manual_close = True
     settings.closed_message = reason or "Fechado temporariamente"
@@ -160,7 +159,7 @@ def manual_open(
     settings = db.query(SiteSettings).order_by(SiteSettings.id.desc()).first()
 
     if not settings:
-        raise HTTPException(status_code=404, detail="Configurações não encontradas")
+        raise HTTPException(404, "Configurações não encontradas")
 
     settings.manual_close = False
     settings.closed_message = None
@@ -168,6 +167,7 @@ def manual_open(
     db.commit()
     db.refresh(settings)
 
+    # Recalcular após abrir
     is_open, msg = calculate_store_status(settings)
     settings.open = is_open
     settings.closed_message = msg
