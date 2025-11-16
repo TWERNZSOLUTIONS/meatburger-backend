@@ -9,7 +9,7 @@ from app.schemas.admin.admin_settings import (
     SiteSettingsUpdate,
     SiteSettingsOut
 )
-from utils.auth_admin import get_current_admin
+from app.routers.admin.admin_auth import get_current_admin
 
 router = APIRouter(
     prefix="/admin/settings",
