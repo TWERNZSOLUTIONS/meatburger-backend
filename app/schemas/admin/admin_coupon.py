@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 
 # --------------------------
-# SCHEMAS BASE
+# SCHEMA BASE
 # --------------------------
 class CouponBase(BaseModel):
     code: constr(max_length=50)
@@ -12,7 +12,8 @@ class CouponBase(BaseModel):
     amount: float
     min_value: Optional[float] = 0.0
     max_uses: Optional[int] = None
-    expires_at: datetime
+    valid_from: Optional[datetime] = None
+    valid_until: datetime
     is_active: Optional[bool] = True
     product_ids: Optional[List[int]] = []
 
@@ -32,7 +33,8 @@ class CouponUpdate(BaseModel):
     amount: Optional[float] = None
     min_value: Optional[float] = None
     max_uses: Optional[int] = None
-    expires_at: Optional[datetime] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
     is_active: Optional[bool] = None
     product_ids: Optional[List[int]] = None
 
@@ -45,4 +47,4 @@ class CouponOut(CouponBase):
     updated_at: datetime
 
     class Config:
-        from_attributes = True
+        orm_mode = True
